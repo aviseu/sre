@@ -16,15 +16,12 @@ env:
   NAMESPACE: infra
 
 jobs:
-  build-and-push:
-    name: Build and Push
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
-    strategy:
-      matrix:
-        app: [creator, reader, web]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,7 +50,5 @@ jobs:
       - name: Deploy charts
         run: |-
           for i in `ls -1 charts/`; do
-            helm upgrade --install $i charts/$i/ -n ${{ env.NAMESPACE }} --create-namespace -f charts/$i/values.yaml -f charts/$i/values.staging.yaml \
-              --set deployments.web.containers.app.image.tag=sha-${{ github.sha }} \
-              --set deployments.creator.containers.app.image.tag=sha-${{ github.sha }}
+            helm upgrade --install $i charts/$i/ -n ${{ env.NAMESPACE }} --create-namespace -f charts/$i/values.yaml
           done
