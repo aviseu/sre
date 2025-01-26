@@ -7,6 +7,3 @@ gateway:
     - name: linkthis-cc-https
       hostname: linkthis.cc
       tls: cloudflare-origin-ssl
-    - name: staging-linkthis-cc-https
-      hostname: staging.linkthis.cc
-      tls: cloudflare-origin-ssl
