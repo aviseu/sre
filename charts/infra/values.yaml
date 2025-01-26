@@ -2,3 +2,4 @@
 gateway:
   name: shared-gateway
   namespace: infra
+  address: public-static-ip
