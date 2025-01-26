@@ -2,6 +2,9 @@
 gateway:
   name: shared-gateway
   namespace: infra
-  hostname: linkthis.cc
   address: public-static-ip
-  tls: cloudflare-origin-ssl
+  hosts:
+    - hostname: linkthis.cc
+      tls: cloudflare-origin-ssl
+    - hostname: "*.linkthis.cc"
+      tls: cloudflare-origin-ssl
