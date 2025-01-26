@@ -4,6 +4,9 @@ gateway:
   namespace: infra
   address: public-static-ip
   hosts:
-    - name: https
+    - name: linkthis-cc-https
       hostname: linkthis.cc
+      tls: cloudflare-origin-ssl
+    - name: wildcard-linkthis-cc-https
+      hostname: "*.linkthis.cc"
       tls: cloudflare-origin-ssl
