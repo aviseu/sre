@@ -4,7 +4,9 @@ gateway:
   namespace: infra
   address: public-static-ip
   hosts:
-    - hostname: linkthis.cc
+    - name: linkthis-cc-https
+      hostname: linkthis.cc
       tls: cloudflare-origin-ssl
-    - hostname: staging.linkthis.cc
+    - name: staging-linkthis-cc-https
+      hostname: staging.linkthis.cc
       tls: cloudflare-origin-ssl
