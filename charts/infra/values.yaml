@@ -1,0 +1,4 @@
+
+gateway:
+  name: shared-gateway
+  namespace: infra

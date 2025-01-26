@@ -1,0 +1,10 @@
+apiVersion: v2
+name: sre
+description: Helm chart for infra
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: helm-library
+    version: 0.5.1
+    repository: oci://us-central1-docker.pkg.dev/alex-cloud-438416/helm-library

@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: alex-cloud-438416
+  WORKLOAD_IDENTITY_PROVIDER: projects/38127965315/locations/global/workloadIdentityPools/github-actions/providers/github
+  SERVICE_ACCOUNT: github-agent@alex-cloud-438416.iam.gserviceaccount.com
+  CLUSTER: alex-cloud-1
+  REGION: us-central1
+  ZONE: us-central1-c
+  NAMESPACE: infra
+
+jobs:
+  build-and-push:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    strategy:
+      matrix:
+        app: [creator, reader, web]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: auth
+        name: Authenticate
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Set up K8S config
+        run: |-
+          gcloud container clusters get-credentials ${{ env.CLUSTER }} --zone ${{ env.ZONE }}
+
+      - name: Helm login
+        run: export HELM_EXPERIMENTAL_OCI=1 && gcloud auth print-access-token | helm registry login -u oauth2accesstoken --password-stdin https://${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build charts
+        run: |-
+          for i in `ls -1 charts/`; do
+            helm dependency build charts/$i/
+          done
+
+      - name: Deploy charts
+        run: |-
+          for i in `ls -1 charts/`; do
+            helm upgrade --install $i charts/$i/ -n ${{ env.NAMESPACE }} --create-namespace -f charts/$i/values.yaml -f charts/$i/values.staging.yaml \
+              --set deployments.web.containers.app.image.tag=sha-${{ github.sha }} \
+              --set deployments.creator.containers.app.image.tag=sha-${{ github.sha }}
+          done
